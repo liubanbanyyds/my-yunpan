@@ -1,0 +1,146 @@
+/* macOS风格CSS */
+:root {
+    --macos-blue: #007AFF;
+    --macos-purple: #5856D6;
+    --macos-pink: #FF2D55;
+    --macos-green: #34C759;
+    --macos-yellow: #FFCC00;
+    --macos-orange: #FF9500;
+    --macos-red: #FF3B30;
+    --macos-gray: #8E8E93;
+    --macos-dark-gray: #1C1C1E;
+    --macos-light-gray: #F2F2F7;
+    --macos-border: rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--macos-blue);
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.btn:hover {
+    background: #0062cc;
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--macos-gray);
+}
+
+.btn-secondary:hover {
+    background: #7a7a80;
+}
+
+.btn-success {
+    background: var(--macos-green);
+}
+
+.btn-success:hover {
+    background: #2db14e;
+}
+
+.btn-danger {
+    background: var(--macos-red);
+}
+
+.btn-danger:hover {
+    background: #e0362c;
+}
+
+/* 输入框样式 */
+.input-group input, .input-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.input-group input:focus, .input-group textarea:focus {
+    outline: none;
+    border-color: var(--macos-blue);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+/* 卡片样式 */
+.card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* 消息提示 */
+.message {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* 选择文本样式 */
+::selection {
+    background: rgba(0, 122, 255, 0.2);
+}
+
+/* macOS风格动画 */
+@keyframes macosFadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.macos-fade-in {
+    animation: macosFadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}

@@ -1,0 +1,191 @@
+第一步：准备工作
+
+1. 登录宝塔面板
+访问 http://你的服务器IP:8888 或 https://你的域名:8888
+使用宝塔账号密码登录
+
+2. 环境检查
+确保已安装以下环境：
+
+PHP：推荐 PHP 7.4 或更高版本
+MySQL：推荐 5.7 或更高版本
+Web服务器：Nginx 或 Apache（推荐 Nginx）
+
+如果未安装，在宝塔面板的"软件商店"中安装。
+
+
+第二步：创建网站和数据库
+
+1. 创建网站
+1.在宝塔面板左侧菜单点击"网站" → "添加网站"
+2.填写网站信息：
+域名：可以填写域名（如 cloud.example.com）或IP地址
+根目录：默认会生成（如 /www/wwwroot/cloud.example.com）
+PHP版本：选择已安装的PHP版本（推荐PHP 7.4+）
+数据库：勾选"创建数据库"
+数据库用户名：自定义（如 cloud_user）
+数据库密码：自动生成或自定义
+数据库名：自动生成或自定义（如 cloud_disk）
+3.点击"提交"，等待创建完成
+
+2. 记录数据库信息
+创建成功后，宝塔会显示数据库信息，请记录：
+
+数据库名：cloud_disk
+用户名：cloud_user
+密码：[你的密码]
+
+第三步：上传项目文件
+
+1. 上传文件
+1.在宝塔面板左侧菜单点击"文件"
+2.进入网站根目录（如 /www/wwwroot/cloud.example.com）
+3.点击"上传"按钮，选择所有PHP文件上传：
+config.php
+index.php
+login.php
+register.php
+logout.php
+download.php
+delete.php
+其他文件夹
+
+2. 创建uploads目录
+1.在网站根目录下，点击"新建文件夹"
+2.创建名为 uploads 的文件夹
+3.设置权限：右键点击 uploads 文件夹 → "属性" → 权限设置为 755
+
+第四步：配置数据库
+
+1. 导入SQL表结构
+
+1.在宝塔面板左侧菜单点击"数据库"
+2.找到你创建的数据库（如 cloud_disk）
+3.点击"管理"，进入phpMyAdmin
+4.在phpMyAdmin中，点击"SQL"选项卡
+5.复制以下SQL语句并执行：mysql文档，可以直接将该文档导入即可。
+
+2. 修改配置文件
+
+1.在宝塔面板的文件管理器中，找到并编辑 config.php
+2.修改数据库连接信息：
+
+// 数据库配置 - 请根据宝塔面板显示的信息修改
+$host = 'localhost';       // 通常为localhost
+$dbname = 'cloud_disk';    // 你创建的数据库名
+$username = 'cloud_user';  // 数据库用户名
+$password = '你的数据库密码'; // 数据库密码
+
+第五步：配置PHP和Web服务器
+
+1. PHP设置
+1.在宝塔面板左侧菜单点击"软件商店"
+2.找到已安装的PHP版本，点击"设置"
+3.调整以下参数（根据需要）：
+上传限制：建议设置为 100M 或更大
+最大执行时间：建议设置为 300
+内存限制：建议设置为 256M
+post_max_size：建议设置为 100M
+4.点击"保存"
+
+2. 网站设置
+1.在宝塔面板左侧菜单点击"网站"
+2.找到你的网站，点击"设置"
+3.在"网站目录"中，确保：
+运行目录：/（根目录）
+伪静态：选择"ThinkPHP"或自定义规则（如果需要）
+4.在"配置文件"中，可以添加以下Nginx规则（如果需要）：
+
+# 防止直接访问上传目录中的文件
+location ~* ^/uploads/.*\.(php|php5|phtml|pl|py|jsp|asp|htm|shtml|sh|cgi)$ {
+    deny all;
+}
+
+# 保护配置文件
+location ~* ^/config\.php$ {
+    deny all;
+}
+
+第六步：设置目录权限
+
+1. 设置上传目录权限
+1.在宝塔面板的文件管理器中，进入网站根目录
+2.右键点击 uploads 文件夹 → "属性"
+3.设置权限为 755
+4.确保所有者是 www 用户（宝塔默认的Web服务器用户）
+
+2. 设置PHP运行用户
+1.在宝塔面板左侧菜单点击"软件商店"
+2.找到PHP版本，点击"设置" → "PHP设置"
+3.在"PHP-FPM配置"中，确保：
+运行用户：www
+运行组：www
+4.保存并重启PHP服务
+
+
+如果访问网站，显示404页面
+配置伪静态规则（Nginx）
+1.在宝塔面板左侧菜单点击"网站"
+2.找到你的网站，点击"设置" → "伪静态"
+3.选择"ThinkPHP"规则，或者手动添加：
+# 伪静态规则
+location / {
+    if (!-e $request_filename) {
+        rewrite ^(.*)$ /index.php?s=$1 last; break;
+    }
+}
+
+# 防止直接访问PHP文件（除了index.php）
+location ~ \.php$ {
+    if ($request_uri !~ "^/index\.php") {
+        return 404;
+    }
+
+    fastcgi_pass unix:/var/run/php/php-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+}
+
+# 保护敏感文件
+location ~* ^/(config\.php|login\.php|register\.php|logout\.php|download\.php|delete\.php)$ {
+    deny all;
+}
+
+# 允许访问的文件类型
+location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+
+
+如果登陆进去，点击上传会跳转到乱码页面，则
+通过宝塔面板界面安装
+
+1.
+登录宝塔面板
+
+访问 http://你的服务器IP:8888
+使用宝塔账号密码登录
+2.
+找到当前使用的 PHP 版本
+
+在左侧菜单点击"软件商店"
+找到你正在使用的 PHP 版本（如 PHP 7.4）
+点击"设置"
+3.
+安装 fileinfo 扩展
+
+在 PHP 设置页面，点击"安装扩展"
+找到 "fileinfo" 扩展
+点击"安装"按钮
+等待安装完成（通常需要 10-30 秒）
+4.
+重启 PHP 服务
+
+安装完成后，在宝塔面板的"软件商店"中
+找到 PHP 版本，点击"重启"
+
+
+
+如果想要修改上传文件的大小，则到index.php文件进行修改
